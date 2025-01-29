@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mic, X } from 'lucide-react';
 
-// interface VoiceControlProps {
-//   onClose: () => void;
-// }
-
 export function VoiceControl({ onClose }) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -13,7 +9,7 @@ export function VoiceControl({ onClose }) {
     let recognition = null;
 
     if ('webkitSpeechRecognition' in window) {
-      recognition = new (window ).webkitSpeechRecognition();
+      recognition = new (window).webkitSpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
 

@@ -2,9 +2,6 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
 
-// interface FileUploadProps {
-//   onFileUpload: (files: File[]) => void;
-// }
 
 export function FileUpload({ onFileUpload }) {
   const onDrop = useCallback((acceptedFiles) => {

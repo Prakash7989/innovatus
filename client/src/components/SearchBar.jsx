@@ -1,9 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 
-// interface SearchBarProps {
-//   onSearch: (query: string) => void;
-// }
 
 export function SearchBar({ onSearch }) {
   return (

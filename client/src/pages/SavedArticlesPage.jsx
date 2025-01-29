@@ -1,8 +1,7 @@
 import React from 'react';
 import { NewsCard } from '../components/NewsCard';
-// import type { NewsArticle } from '../types';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Clock, Trash2 } from 'lucide-react';
+import {  Bookmark,Trash2 }from 'lucide-react';
 
 export function SavedArticlesPage() {
   const [savedArticles, setSavedArticles] = useLocalStorage('saved-articles', []);
@@ -15,7 +14,7 @@ export function SavedArticlesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] 
         text-gray-500 dark:text-gray-400">
-        {/* <Bookmark className="w-16 h-16 mb-4 opacity-50" /> */}
+        <Bookmark className="w-16 h-16 mb-4 opacity-50" />
         <h2 className="text-xl font-medium mb-2">No saved articles yet</h2>
         <p>Articles you save will appear here for offline reading</p>
       </div>

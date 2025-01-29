@@ -1,11 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { X, Play, Pause, Volume2 } from 'lucide-react';
-// import type { Document } from '../types';
 
-// interface DocumentModalProps {
-//   document: Document;
-//   onClose: () => void;
-// }
 
 export function DocumentModal({ document, onClose }) {
   const [isPlaying, setIsPlaying] = useState(false);

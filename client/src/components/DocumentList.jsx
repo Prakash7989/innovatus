@@ -1,11 +1,6 @@
 import React from 'react';
 import { FileText, Tag, Calendar } from 'lucide-react';
-// import type { Document } from '../types';
 
-// interface DocumentListProps {
-//   documents: Document[];
-//   onDocumentClick: (doc: Document) => void;
-// }
 
 export function DocumentList({ documents, onDocumentClick }) {
   return (

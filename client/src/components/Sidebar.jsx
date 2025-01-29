@@ -1,32 +1,23 @@
 import React from 'react';
 import { FileText, Newspaper, Bookmark, ChevronLeft, LogOut, User } from 'lucide-react';
-import type { AppRoute } from '../types.ts';
 import { auth } from '../lib/firebase';
 import { signOut } from 'firebase/auth';
 
-interface SidebarProps {
-  currentRoute: AppRoute;
-  onRouteChange: (route: AppRoute) => void;
-  isMobile: boolean;
-  isOpen: boolean;
-  onToggle: () => void;
-  user: any;
-}
 
-export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggle, user }: SidebarProps) {
+export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggle, user }) {
   const menuItems = [
     {
-      route: 'documents' as AppRoute,
+      route: 'documents',
       icon: FileText,
       label: 'Documents',
     },
     {
-      route: 'news' as AppRoute,
+      route: 'news',
       icon: Newspaper,
       label: 'News',
     },
     {
-      route: 'saved' as AppRoute,
+      route: 'saved',
       icon: Bookmark,
       label: 'Saved Articles',
     },
@@ -44,7 +35,7 @@ export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggl
     <aside 
       className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out
         ${isOpen ? 'w-64' : 'w-16'} bg-white/80 dark:bg-dark-100/80 backdrop-blur-md 
-        border-r border-gray-200 dark:border-gray-700 shadow-xl`}
+         `}
       onClick={() => !isOpen && onToggle()}
     >
       <div className="flex flex-col h-full">
@@ -53,7 +44,7 @@ export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggl
             <>
               <h1 className="text-xl font-semibold bg-gradient-to-r from-primary-600 to-primary-500 
                 dark:from-primary-300 dark:to-primary-400 bg-clip-text text-transparent">
-                Dashboard
+                InovateUs
               </h1>
               <button
                 onClick={onToggle}
@@ -90,7 +81,7 @@ export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggl
           {user && (
             <div className="mb-3 p-3 rounded-xl bg-gray-50 dark:bg-dark-200/50">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/30 
+                <div className=" rounded-lg bg-primary-50 dark:bg-primary-900/30 
                   flex-shrink-0">
                   <User className="w-5 h-5 text-primary-500 dark:text-primary-300" />
                 </div>

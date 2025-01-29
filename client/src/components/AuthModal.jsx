@@ -8,10 +8,6 @@ import {
   GoogleAuthProvider
 } from 'firebase/auth';
 
-// interface AuthModalProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-// }
 
 export function AuthModal({ isOpen, onClose }) {
   const [isSignUp, setIsSignUp] = useState(false);

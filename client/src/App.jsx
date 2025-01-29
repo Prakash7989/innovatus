@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { DocumentsPage } from './pages/DocumentPage';
-import { NewsPage } from './pages/NewsPage';
-import { ThemeToggle } from './components/ThemeToggle';
-import { Sidebar } from './components/Sidebar.tsx';
-import { AuthModal } from './components/AuthModal';
+import { DocumentsPage } from './pages/DocumentsPage.jsx';
+import { NewsPage } from './pages/NewsPage.jsx';
+import { ThemeToggle } from './components/ThemeToggle.jsx';
+import { Sidebar } from './components/Sidebar.jsx';
+import { AuthModal } from './components/AuthModal.jsx';
 import { Settings } from 'lucide-react';
-// import type { Theme, AppRoute } from './types';
-import { auth } from './lib/firebase';
+import { auth } from './lib/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 
 function App() {

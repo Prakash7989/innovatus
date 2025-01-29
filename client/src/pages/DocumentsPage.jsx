@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { FileUpload } from '../components/FileUpload';
-import { DocumentList } from '../components/DocumentList';
-import { SearchBar } from '../components/SearchBar';
-import { DocumentModal } from '../components/DocumentModal';
-// import type { Document, Category } from '../types';
+import { DocumentList } from '../components/DocumentList.jsx';
+import { SearchBar } from '../components/SearchBar.jsx';
+import { DocumentModal } from '../components/DocumentModal.jsx';
 
 const CATEGORIES = [
   { id: '1', name: 'Business', color: 'blue' },

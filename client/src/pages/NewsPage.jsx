@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NewsCard } from '../components/NewsCard';
-import { VoiceControl } from '../components/VoiceControl';
+import { VoiceControl } from '../components/VoiceControl.jsx';
 import { Mic, TrendingUp, Filter } from 'lucide-react';
-// import type { NewsArticle, NewsPreference } from '../types';
 
 const MOCK_PREFERENCES = [
   { id: '1', topic: 'Technology', enabled: true },
@@ -19,7 +18,7 @@ const MOCK_TRENDING = [
 
 export function NewsPage() {
   const [preferences, setPreferences] = useState(MOCK_PREFERENCES);
-  const [selectedSentiment, setSelectedSentiment] = useState<'all' | 'positive' | 'neutral' | 'negative'>('all');
+  const [selectedSentiment, setSelectedSentiment] = useState('all');
   const [isVoiceActive, setVoiceActive] = useState(false);
   const [articles, setArticles] = useState([]);
 
@@ -61,19 +60,15 @@ export function NewsPage() {
           sentiment: 'neutral'
         }
       ];
-  
-      const filteredNews = mockNews.filter(article =>
+
+      setArticles(mockNews.filter(article => 
         enabledTopics.includes(article.category) &&
         (selectedSentiment === 'all' || article.sentiment === selectedSentiment)
-      );
-  
-      // Ensure setArticles always gets an array
-      setArticles(Array.isArray(filteredNews) ? filteredNews : []);
+      ));
     };
-  
+
     fetchPersonalizedNews();
   }, [preferences, selectedSentiment]);
-  
 
   const togglePreference = (id) => {
     setPreferences(prev => prev.map(pref => 
@@ -108,7 +103,7 @@ export function NewsPage() {
             {['all', 'positive', 'neutral', 'negative'].map((sentiment) => (
               <button
                 key={sentiment}
-                onClick={() => setSelectedSentiment(sentiment)}
+                onClick={() => setSelectedSentiment(sentiment )}
                 className={`px-3 sm:px-4 py-2 rounded-lg capitalize whitespace-nowrap text-sm transition-colors ${
                   selectedSentiment === sentiment
                     ? 'bg-primary-500 text-white'
@@ -120,15 +115,10 @@ export function NewsPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mt-6">
-          {Array.isArray(articles) && articles.length > 0 ? (
-  articles.map(article => (
-    <NewsCard key={article.id} article={article} />
-  ))
-) : (
-  <p className="text-gray-500 dark:text-gray-400">No articles available.</p>
-)}
-
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 mt-6">
+            {articles.map(article => (
+              <NewsCard key={article.id} article={article} />
+            ))}
           </div>
         </div>
 
@@ -168,7 +158,7 @@ export function NewsPage() {
               </h3>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
-            {MOCK_TRENDING.map(topic => (
+              {MOCK_TRENDING.map(topic => (
                 <div
                   key={topic.id}
                   className="flex items-center justify-between p-3 rounded-lg 
@@ -177,9 +167,9 @@ export function NewsPage() {
                   <span className="text-gray-700 dark:text-gray-300">
                     {topic.topic}
                   </span>
-                  {/* <span className="text-sm text-primary-500 dark:text-primary-300">
+                  <span className="text-sm text-primary-500 dark:text-primary-300">
                     {topic.count.toLocaleString()}
-                  </span> */}
+                  </span>
                 </div>
               ))}
             </div>

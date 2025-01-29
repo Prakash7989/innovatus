@@ -1,6 +1,5 @@
 import React from 'react';
 import { NewsCard } from './NewsCard';
-// import type { NewsArticle } from '../types';
 
 const MOCK_NEWS = [
   {
