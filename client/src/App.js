@@ -1,25 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { FileUpload } from './components/FileUpload';
-import { DocumentList } from './components/DocumentList';
-import { SearchBar } from './components/SearchBar';
+import { DocumentsPage } from './pages/DocumentPage';
+import { NewsPage } from './pages/NewsPage';
 import { ThemeToggle } from './components/ThemeToggle';
-import { DocumentModal } from './components/DocumentModal';
-import { Sidebar } from './components/SideBar';
-import { NewsApp } from './components/NewsApp';
+import { Sidebar } from './components/Sidebar.tsx';
+import { AuthModal } from './components/AuthModal';
 import { Settings } from 'lucide-react';
-// import type { Document, Theme, AppRoute } from './types';
+// import type { Theme, AppRoute } from './types';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 function App() {
-  // const [documents, setDocuments] = useState<Document[]>([]);
-  const [documents, setDocuments] = useState([]);
-  // const [theme, setTheme] = useState<Theme>('light');
   const [theme, setTheme] = useState('light');
-  // const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const [selectedDocument, setSelectedDocument] = useState(null);
-  // const [currentRoute, setCurrentRoute] = useState<AppRoute>('documents');
   const [currentRoute, setCurrentRoute] = useState('documents');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+        setShowAuthModal(true);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -44,35 +53,9 @@ function App() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  // const handleFileUpload = async (files: File[]) => {
-  const handleFileUpload = async (files) => {
-    // const processedDocs: Document[] = files.map(file => ({
-    const processedDocs = files.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      type: file.type,
-      category: 'Uncategorized',
-      tags: ['New', file.type.split('/')[1]],
-      uploadDate: new Date(),
-      summary: `This is an AI-generated summary of ${file.name}. The document appears to be a ${file.type.split('/')[1]} file containing important information. The main topics covered include project management, data analysis, and strategic planning. The document emphasizes the importance of clear communication and efficient workflow processes.`,
-      highlights: [
-        'Key findings suggest a 25% improvement in efficiency',
-        'Implementation strategy outlined in section 3.2',
-        'Recommendations for future developments',
-        'Cost analysis and resource allocation details'
-      ]
-    }));
-
-    setDocuments(prev => [...processedDocs, ...prev]);
-  };
-
-  const handleSearch = (query) => {
-    console.log('Searching for:', query);
-  };
-
-  const handleDocumentClick = (doc) => {
-    setSelectedDocument(doc);
-  };
+  if (!user) {
+    return <AuthModal isOpen={showAuthModal} onClose={() => {}} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-primary-50 
@@ -86,9 +69,10 @@ function App() {
         isMobile={isMobile}
         isOpen={isSidebarOpen}
         onToggle={() => setSidebarOpen(prev => !prev)}
+        user={user}
       />
 
-      <div className={`transition-all duration-300 ${isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'}`}>
+      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
         <header className="sticky top-0 z-30 bg-white/70 dark:bg-dark-100/50 backdrop-blur-sm 
           border-b border-gray-200 dark:border-gray-800 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -103,50 +87,9 @@ function App() {
         </header>
 
         <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {currentRoute === 'documents' ? (
-            <div className="grid gap-8">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                  Document Manager
-                </h2>
-                <FileUpload onFileUpload={handleFileUpload} />
-              </div>
-
-              <div className="space-y-4">
-                <SearchBar onSearch={handleSearch} />
-                
-                <div className="p-6 rounded-xl backdrop-blur-sm bg-white/70 dark:bg-dark-100/50 
-                  border border-gray-200 dark:border-gray-800 shadow-lg">
-                  <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                    Your Documents
-                  </h2>
-                  {documents.length > 0 ? (
-                    <DocumentList
-                      documents={documents}
-                      onDocumentClick={handleDocumentClick}
-                    />
-                  ) : (
-                    <div className="text-center py-12">
-                      <p className="text-gray-500 dark:text-gray-400">
-                        No documents uploaded yet. Start by uploading some files!
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <NewsApp />
-          )}
+          {currentRoute === 'documents' ? <DocumentsPage /> : <NewsPage />}
         </main>
       </div>
-
-      {selectedDocument && (
-        <DocumentModal
-          document={selectedDocument}
-          onClose={() => setSelectedDocument(null)}
-        />
-      )}
     </div>
   );
 }

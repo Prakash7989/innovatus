@@ -6,9 +6,7 @@ import { Upload } from 'lucide-react';
 //   onFileUpload: (files: File[]) => void;
 // }
 
-// export function FileUpload({ onFileUpload }: FileUploadProps) {
 export function FileUpload({ onFileUpload }) {
-//   const onDrop = useCallback((acceptedFiles: File[]) => {
   const onDrop = useCallback((acceptedFiles) => {
     onFileUpload(acceptedFiles);
   }, [onFileUpload]);
