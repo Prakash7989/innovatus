@@ -17,7 +17,7 @@ export function Sidebar({ currentRoute, onRouteChange, isMobile, isOpen, onToggl
       label: 'News',
     },
     {
-      route: 'saved',
+      route: 'saved-articles',
       icon: Bookmark,
       label: 'Saved Articles',
     },

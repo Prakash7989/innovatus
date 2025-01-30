@@ -1,7 +1,49 @@
-import React from 'react';
+import React from "react";
 import { Clock, Bookmark, BookmarkCheck } from 'lucide-react';
+import { db, auth } from "../lib/firebase";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export function NewsCard({ article, onSave }) {
+
+export function NewsCard({ article, onSave,theme }) {
+  const handleReadMore = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+
+    let categoryScores = {};
+    if (userDoc.exists()) {
+      categoryScores = userDoc.data().categoryScores || {};
+    }
+
+    // Increment category score
+    article.category.forEach((cat) => {
+      categoryScores[cat] = (categoryScores[cat] || 0) + 1;
+    });
+
+    await setDoc(userRef, { categoryScores }, { merge: true });
+  };
+  // const { theme } = theme();
+
+  const handleClick = (event) => {
+    event.stopPropagation(); 
+    onSave?.(article);
+    handleReadMore(); //two times rendered even for unsave
+
+    toast(article.isSaved ? "Removed from saved articles" : "Saved!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme:  "dark", //theme === "dark" ? "dark" : "light",
+    });
+  };
+
   return (
     <div className="relative w-full overflow-hidden rounded-3xl shadow-xl group">
       <div className="relative w-full h-[450px] sm:h-[550px]">
@@ -26,18 +68,19 @@ export function NewsCard({ article, onSave }) {
             <span>{article.readTime || '5'} min read</span>
           </div>
           <div className="flex gap-4">
-            <button
-              onClick={() => onSave?.(article)}
-              className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition"
-            >
-              {article.isSaved ? (
-                <BookmarkCheck className="w-6 h-6 text-yellow-400" />
-              ) : (
-                <Bookmark className="w-6 h-6 text-white" />
-              )}
-            </button>
+          <button
+        onClick={handleClick}
+        className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition"
+      >
+        {article.isSaved ? (
+          <BookmarkCheck className="w-6 h-6 text-yellow-400" />
+        ) : (
+          <Bookmark className="w-6 h-6 text-white" />
+        )}
+      </button>
             <a
               href={article.url}
+              onClick={handleReadMore}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-2 rounded-full bg-primary-600 hover:bg-primary-500 text-white text-lg font-medium transition bg-opacity-40"

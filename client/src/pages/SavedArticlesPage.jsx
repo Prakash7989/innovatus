@@ -1,13 +1,14 @@
 import React from 'react';
 import { NewsCard } from '../components/NewsCard';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import {  Bookmark,Trash2 }from 'lucide-react';
+import { Bookmark, Trash2 } from 'lucide-react';
+import { auth } from '../lib/firebase';
 
 export function SavedArticlesPage() {
-  const [savedArticles, setSavedArticles] = useLocalStorage('saved-articles', []);
+  const [savedArticles, setSavedArticles] = useLocalStorage(`saved-articles-${auth.currentUser?.uid}`, []);
 
   const removeArticle = (articleId) => {
-    setSavedArticles(prev => prev.filter(article => article.id !== articleId));
+    setSavedArticles((prev) => prev.filter((article) => article.id !== articleId));
   };
 
   if (savedArticles.length === 0) {
@@ -32,8 +33,8 @@ export function SavedArticlesPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-        {savedArticles.map(article => (
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
+        {savedArticles.map((article) => (
           <div key={article.id} className="relative group">
             <NewsCard article={{ ...article, isSaved: true }} />
             <button

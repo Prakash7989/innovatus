@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { DocumentsPage } from './pages/DocumentsPage.jsx';
 import { ThemeToggle } from './components/ThemeToggle.jsx';
 import { Sidebar } from './components/Sidebar.jsx';
+import { SavedArticlesPage } from './pages/SavedArticlesPage.jsx';
 import { AuthModal } from './components/AuthModal.jsx';
 import { Settings } from 'lucide-react';
 import { auth } from './lib/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { NewsPage } from './pages/NewsPage.jsx';
+
 
 function App() {
   const [theme, setTheme] = useState('light');
@@ -86,7 +88,9 @@ function App() {
         </header>
 
         <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {currentRoute === 'documents' ? <DocumentsPage /> : <NewsPage />}
+          {currentRoute === 'documents' && <DocumentsPage />}
+          {currentRoute === 'news' && <NewsPage />}
+          {currentRoute === 'saved-articles' && <SavedArticlesPage />}
         </main>
       </div>
     </div>
