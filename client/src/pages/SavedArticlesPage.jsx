@@ -36,7 +36,7 @@ export function SavedArticlesPage() {
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         {savedArticles.map((article) => (
           <div key={article.id} className="relative group">
-            <NewsCard article={{ ...article, isSaved: true }} />
+            <NewsCard article={{ ...article, isSaved: true }} savedArticle={true} />
             <button
               onClick={() => removeArticle(article.id)}
               className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/90 text-white 

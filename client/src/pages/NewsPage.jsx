@@ -7,7 +7,7 @@ import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 
-export function NewsPage() {
+export function NewsPage({ theme }) {
   const [isVoiceActive, setVoiceActive] = useState(false);
   const [articles, setArticles] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -94,6 +94,7 @@ export function NewsPage() {
 
   return (
     <div className="max-w-full overflow-hidden">
+      
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content */}
         <div className="flex-1 min-w-0">
@@ -146,6 +147,7 @@ export function NewsPage() {
                   }}
                   onSave={handleSaveArticle}
                   categoryScores={categoryScores}
+                  theme={theme}
                 />
               ))
             ) : (
@@ -157,7 +159,7 @@ export function NewsPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="w-full lg:w-72 flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:sticky lg:top-4 lg:max-h-[calc(80vh-2rem)] top-0 fixed ">
+        <div className="w-full lg:w-72 flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:sticky lg:top-4 lg:max-h-[calc(80vh-2rem)] lg-top-0 lg-fixed lg-sticky ">
           <div
             className="flex-1 lg:flex-none p-4 sm:p-6 rounded-xl bg-white/70 dark:bg-dark-100/50 
             backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-lg"

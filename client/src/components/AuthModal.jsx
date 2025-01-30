@@ -7,6 +7,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider
 } from 'firebase/auth';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export function AuthModal({ isOpen, onClose }) {
@@ -26,6 +28,7 @@ export function AuthModal({ isOpen, onClose }) {
         await signInWithEmailAndPassword(auth, email, password);
       }
       onClose();
+      toast.success(`Successfully ${isSignUp ? 'signed up' : 'signed in'}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -36,6 +39,7 @@ export function AuthModal({ isOpen, onClose }) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       onClose();
+      toast.success('Successfully signed in ');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -163,7 +167,7 @@ export function AuthModal({ isOpen, onClose }) {
                 <div className="w-full border-t border-gray-200 dark:border-gray-700" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white/90 dark:bg-dark-100/90 
+                <span className="px-2 dark:bg-dark-100/90 
                   text-gray-500 dark:text-gray-400">
                   Or continue with
                 </span>
@@ -174,13 +178,11 @@ export function AuthModal({ isOpen, onClose }) {
               type="button"
               onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg 
-                bg-white hover:bg-gray-50 
-                dark:bg-dark-200 dark:hover:bg-dark-300 
-                text-gray-700 dark:text-gray-200 font-medium 
-                border border-gray-200 dark:border-gray-700
-                transition-colors"
+                bg-red-500 hover:font-medium hover:bg-red-600 
+               
+                transition-colors text-gray-50"
             >
-              <CircleUserRound className="w-5 h-5" />
+              <CircleUserRound className="w-5 h-5 text-white " />
               Continue with Google
             </button>
           </form>

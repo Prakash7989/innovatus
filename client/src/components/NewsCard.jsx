@@ -1,12 +1,11 @@
 import React from "react";
-import { Clock, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Clock, Bookmark, BookmarkCheck } from "lucide-react";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-export function NewsCard({ article, onSave,theme }) {
+export function NewsCard({ article, onSave, theme, savedArticle = false }) {
   const handleReadMore = async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -29,7 +28,7 @@ export function NewsCard({ article, onSave,theme }) {
   // const { theme } = theme();
 
   const handleClick = (event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     onSave?.(article);
     handleReadMore(); //two times rendered even for unsave
 
@@ -40,7 +39,7 @@ export function NewsCard({ article, onSave,theme }) {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme:  "dark", //theme === "dark" ? "dark" : "light",
+      theme: theme === "dark" ? "dark" : "light",
     });
   };
 
@@ -54,7 +53,7 @@ export function NewsCard({ article, onSave,theme }) {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/90" />
       </div>
-      
+
       <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 text-white">
         <h3 className="text-2xl sm:text-3xl font-extrabold mb-4">
           {article.title}
@@ -65,19 +64,22 @@ export function NewsCard({ article, onSave,theme }) {
         <div className="flex justify-between items-center">
           <div className="flex items-center text-sm opacity-80">
             <Clock className="w-5 h-5 mr-2" />
-            <span>{article.readTime || '5'} min read</span>
+            <span>{article.readTime || "5"} min read</span>
           </div>
           <div className="flex gap-4">
-          <button
-        onClick={handleClick}
-        className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition"
-      >
-        {article.isSaved ? (
-          <BookmarkCheck className="w-6 h-6 text-yellow-400" />
-        ) : (
-          <Bookmark className="w-6 h-6 text-white" />
-        )}
-      </button>
+            {!savedArticle && (
+              <button
+                onClick={handleClick}
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition"
+              >
+                {article.isSaved ? (
+                  <BookmarkCheck className="w-6 h-6 text-yellow-400" />
+                ) : (
+                  <Bookmark className="w-6 h-6 text-white" />
+                )}
+              </button>
+            )}
+
             <a
               href={article.url}
               onClick={handleReadMore}
