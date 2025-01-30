@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DocumentsPage } from './pages/DocumentsPage.jsx';
-import { NewsPage } from './pages/NewsPage.jsx';
 import { ThemeToggle } from './components/ThemeToggle.jsx';
 import { Sidebar } from './components/Sidebar.jsx';
 import { AuthModal } from './components/AuthModal.jsx';
 import { Settings } from 'lucide-react';
 import { auth } from './lib/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
+import { NewsPage } from './pages/NewsPage.jsx';
 
 function App() {
   const [theme, setTheme] = useState('light');

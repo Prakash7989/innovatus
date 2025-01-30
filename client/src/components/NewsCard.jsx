@@ -6,7 +6,7 @@ export function NewsCard({ article, onSave }) {
     <div className="relative w-full overflow-hidden rounded-3xl shadow-xl group">
       <div className="relative w-full h-[450px] sm:h-[550px]">
         <img
-          src={article.imageUrl}
+          src={article.image}
           alt={article.title}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
