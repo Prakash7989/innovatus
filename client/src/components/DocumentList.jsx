@@ -1,13 +1,27 @@
-import React from 'react';
-import { FileText, Tag, Calendar } from 'lucide-react';
-
+import React, { useState } from "react";
+import { FileText, Tag, Calendar } from "lucide-react";
+import axios from "axios";
 
 export function DocumentList({ documents, onDocumentClick }) {
+  const [summary, setSummary] = useState("");
+  const [selectedDoc, setSelectedDoc] = useState(null);
+
+  const fetchSummary = async (doc) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/get-summary/${doc._id}`);
+      setSummary(response.data.summary);
+      setSelectedDoc(doc._id); // Track selected document
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+      setSummary("Failed to load summary.");
+    }
+  };
+
   return (
     <div className="space-y-3 sm:space-y-4">
       {documents.map((doc) => (
         <div
-          key={doc.id}
+          key={doc._id}
           onClick={() => onDocumentClick(doc)}
           className="p-4 sm:p-6 rounded-xl backdrop-blur-sm bg-white/70 dark:bg-dark-100/50 
             border border-gray-100 dark:border-gray-800 shadow-lg shadow-gray-100/20 
@@ -27,10 +41,10 @@ export function DocumentList({ documents, onDocumentClick }) {
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Calendar className="w-4 h-4" />
-              <span>{doc.uploadDate.toLocaleDateString()}</span>
+              <span>{new Date(doc.uploadDate).toLocaleDateString()}</span>
             </div>
           </div>
-          
+
           {doc.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {doc.tags.map((tag, index) => (
@@ -44,6 +58,13 @@ export function DocumentList({ documents, onDocumentClick }) {
                   {tag}
                 </span>
               ))}
+            </div>
+          )}
+
+          {selectedDoc === doc._id && summary && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-gray-700">File Summary:</h3>
+              <p className="text-gray-600">{summary}</p>
             </div>
           )}
         </div>
