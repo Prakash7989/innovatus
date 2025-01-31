@@ -1,11 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload } from 'lucide-react';
-import axios from 'axios';
+
 
 export function FileUpload({ onFileUpload }) {
-  const [file, setFile] = useState(null);
-
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 1) {
       alert("You can upload only one file at a time.");
@@ -78,25 +76,27 @@ export function FileUpload({ onFileUpload }) {
     <div
       {...getRootProps()}
       className={`p-10 border-2 border-dashed rounded-xl backdrop-blur-sm
-        transition-all duration-300 ease-in-out
-        ${isDragActive 
-          ? 'border-primary-400 bg-primary-400/10 dark:border-primary-300 dark:bg-primary-300/5' 
-          : 'border-gray-300 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-300'
+        transition-all duration-300 ease-in-out cursor-pointer
+        ${isDragActive || isHover
+          ? 'border-blue-500 bg-blue-100 bg-opacity-40 dark:border-blue-400 dark:bg-blue-300/10' 
+          : 'border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400'
         }
         dark:bg-dark-100/30`}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       <input {...getInputProps()} />
       <div className="flex flex-col items-center gap-4">
         <Upload className={`w-12 h-12 ${
-          isDragActive ? 'text-primary-500 dark:text-primary-300' : 'text-gray-400 dark:text-gray-500'
+          isDragActive || isHover ? 'text-blue-500 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
         }`} />
         <p className="text-lg text-gray-600 dark:text-gray-300">
           {isDragActive
-            ? "Drop the file here..."
-            : "Drag 'n' drop a file here, or click to select one"}
+            ? "Drop the files here..."
+            : "Drag 'n' drop files here, or click to select files"}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Supports PDF, DOCX, and PPT files (One file at a time)
+          Supports PDF, DOCX, and PPT files
         </p>
       </div>
       <input 

@@ -58,7 +58,7 @@ export function DocumentsPage() {
   return (
     <div className="flex flex-col gap-4 p-4 max-w mx-auto">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white text-center">
-        Smart Docs
+         
       </h2>
       <FileUpload onFileUpload={handleFileUpload} />
       <SearchBar onSearch={setSearchQuery} />
