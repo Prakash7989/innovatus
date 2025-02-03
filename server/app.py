@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -35,12 +36,21 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Function to clean extracted text
+def clean_text(text):
+    if not text:
+        return ""
+    
+    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra spaces and newlines
+    text = re.sub(r'[^\w\s.,;!?()"\']', '', text)  # Remove special characters (if needed)
+    return text
+
 # Function to extract text from DOCX file
 def extract_text_from_docx(file_path):
     try:
         doc = Document(file_path)
         text = '\n'.join([para.text for para in doc.paragraphs])
-        return text
+        return clean_text(text)
     except Exception as e:
         return str(e)
 
@@ -53,7 +63,7 @@ def extract_text_from_pptx(file_path):
             for shape in slide.shapes:
                 if hasattr(shape, "text"):
                     text += shape.text + '\n'
-        return text
+        return clean_text(text)
     except Exception as e:
         return str(e)
 
@@ -70,33 +80,25 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        # Ensure the upload folder exists
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
             os.makedirs(app.config['UPLOAD_FOLDER'])
         
         file.save(file_path)
 
-        # Extract text from the file based on type (PDF, DOCX, PPT, etc.)
+        # Extract text from the file
         summary = ''
         try:
             if filename.endswith('.pdf'):
                 with pdfplumber.open(file_path) as pdf:
                     text = ' '.join([page.extract_text() or '' for page in pdf.pages])
-                    summary = text[:10000]  # Summary of the first 10000 characters
+                    summary = clean_text(text)[:10000]
             elif filename.endswith('.docx'):
-                text = extract_text_from_docx(file_path)
-                summary = text[:10000]  # Summary of the first 10000 characters
+                summary = extract_text_from_docx(file_path)[:10000]
             elif filename.endswith(('.ppt', '.pptx')):
-                text = extract_text_from_pptx(file_path)
-                summary = text[:10000]  # Summary of the first 10000 characters
+                summary = extract_text_from_pptx(file_path)[:10000]
         except Exception as e:
             return jsonify({"error": f"Error extracting text: {str(e)}"}), 500
-        finally:
-            # Ensure the file is closed after processing
-            if 'pdf' in locals():
-                pdf.close()
 
-        # Store file details and summary in MongoDB
         file_data = {
             'filename': filename,
             'file_path': file_path,
@@ -113,30 +115,15 @@ def upload_file():
 
     return jsonify({"error": "Invalid file type. Only PDF, PPT, PPTX, DOC, or DOCX allowed."}), 400
 
-# Route to fetch summary for a file
 @app.route('/get-summary/<file_id>', methods=['GET'])
 def get_summary(file_id):
     try:
-        # Replace this with your actual summary generation logic
-        summaries = {
-            '1': 'This is a sample summary for document 1.',
-            '2': 'Here is a summary for document 2.',
-            # Add more mappings as needed
-        }
-        
-        summary = summaries.get(file_id, 'No summary found for this document.')
-        
-        return jsonify({
-            'summary': summary,
-            'file_id': file_id
-        }), 200
-    
+        file_data = file_collection.find_one({"_id": ObjectId(file_id)})
+        if not file_data:
+            return jsonify({"error": "File not found"}), 404
+        return jsonify({"summary": file_data.get('summary', 'No summary available.')})
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'message': 'Failed to retrieve summary'
-        }), 500
-
+        return jsonify({"error": str(e), "message": "Failed to retrieve summary"}), 500
 
 # Initialize CurrentsAPI client with environment variable for API key
 currents_api_key = "_NSfqmF4m1zJsae21ns7FØRPOB1aHvhNQVSj5N7c2dnHG7Tx"
