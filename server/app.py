@@ -1,4 +1,4 @@
-import os
+import io
 import re
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -25,39 +25,31 @@ news_collection = news_db["news"]
 file_db = client["file_storage_db"]
 file_collection = file_db["files"]
 
-# Configure upload folder
-UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'ppt', 'pptx', 'doc', 'docx'}
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 
-# Function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Function to clean extracted text
 def clean_text(text):
     if not text:
         return ""
     
-    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra spaces and newlines
-    text = re.sub(r'[^\w\s.,;!?()"\']', '', text)  # Remove special characters (if needed)
+    text = re.sub(r'\s+', ' ', text).strip()
+    text = re.sub(r'[^\w\s.,;!?()"\']', '', text)
     return text
 
-# Function to extract text from DOCX file
-def extract_text_from_docx(file_path):
+def extract_text_from_docx(file_bytes):
     try:
-        doc = Document(file_path)
+        doc = Document(io.BytesIO(file_bytes))
         text = '\n'.join([para.text for para in doc.paragraphs])
         return clean_text(text)
     except Exception as e:
         return str(e)
 
-# Function to extract text from PPT/PPTX files
-def extract_text_from_pptx(file_path):
+def extract_text_from_pptx(file_bytes):
     try:
-        prs = Presentation(file_path)
+        prs = Presentation(io.BytesIO(file_bytes))
         text = ''
         for slide in prs.slides:
             for shape in slide.shapes:
@@ -78,32 +70,28 @@ def upload_file():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-        
-        file.save(file_path)
+        file_bytes = file.read()  # Read file into memory
 
         # Extract text from the file
         summary = ''
         try:
             if filename.endswith('.pdf'):
-                with pdfplumber.open(file_path) as pdf:
+                with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
                     text = ' '.join([page.extract_text() or '' for page in pdf.pages])
                     summary = clean_text(text)[:10000]
             elif filename.endswith('.docx'):
-                summary = extract_text_from_docx(file_path)[:10000]
+                summary = extract_text_from_docx(file_bytes)[:10000]
             elif filename.endswith(('.ppt', '.pptx')):
-                summary = extract_text_from_pptx(file_path)[:10000]
+                summary = extract_text_from_pptx(file_bytes)[:10000]
         except Exception as e:
             return jsonify({"error": f"Error extracting text: {str(e)}"}), 500
 
         file_data = {
             'filename': filename,
-            'file_path': file_path,
             'file_type': file.mimetype,
-            'summary': summary
+            'file_content': file_bytes,
+            'summary': summary,
+            'upload_date': datetime.utcnow()
         }
         result = file_collection.insert_one(file_data)
 
@@ -124,6 +112,20 @@ def get_summary(file_id):
         return jsonify({"summary": file_data.get('summary', 'No summary available.')})
     except Exception as e:
         return jsonify({"error": str(e), "message": "Failed to retrieve summary"}), 500
+
+@app.route('/download/<file_id>', methods=['GET'])
+def download_file(file_id):
+    try:
+        file_data = file_collection.find_one({"_id": ObjectId(file_id)})
+        if not file_data:
+            return jsonify({"error": "File not found"}), 404
+        
+        return file_data['file_content'], 200, {
+            'Content-Type': file_data['file_type'],
+            'Content-Disposition': f'attachment; filename={file_data["filename"]}'
+        }
+    except Exception as e:
+        return jsonify({"error": str(e), "message": "Failed to download file"}), 500
 
 # Initialize CurrentsAPI client with environment variable for API key
 currents_api_key = "_NSfqmF4m1zJsae21ns7FØRPOB1aHvhNQVSj5N7c2dnHG7Tx"
@@ -151,6 +153,4 @@ def get_news():
     return jsonify(news_articles), 200
 
 if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
     app.run(debug=True)
