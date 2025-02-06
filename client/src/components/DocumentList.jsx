@@ -1,74 +1,93 @@
-import React, { useState } from "react";
-import { FileText, Tag, Calendar } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { FileText, Calendar } from "lucide-react";
 import axios from "axios";
 
-export function DocumentList({ documents, onDocumentClick }) {
-  const [summary, setSummary] = useState("");
-  const [selectedDoc, setSelectedDoc] = useState(null);
+export function DocumentList({ onDocumentClick }) {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingDocId, setLoadingDocId] = useState(null);
 
-  const fetchSummary = async (doc) => {
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/files");
+        setDocuments(response.data);
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchDocuments(); 
+  
+    const interval = setInterval(fetchDocuments, 5000); 
+  
+    return () => clearInterval(interval); 
+  }, []);
+  
+
+  const handleDocumentClick = async (doc) => {
+    if (!doc || !doc.id) {
+      console.error("Error: Document ID is missing");
+      return;
+    }
+
+    setLoadingDocId(doc.id);
+
     try {
-      const response = await axios.get(`http://localhost:5000/get-summary/${doc._id}`);
-      setSummary(response.data.summary);
-      setSelectedDoc(doc._id); // Track selected document
+      const response = await axios.get(`http://localhost:5000/get-summary/${doc.id}`);
+      const summary = response.data.summary;
+      onDocumentClick({ ...doc, summary });
     } catch (error) {
       console.error("Error fetching summary:", error);
-      setSummary("Failed to load summary.");
+      onDocumentClick({ ...doc, summary: "Failed to load summary." });
+    } finally {
+      setLoadingDocId(null);
     }
   };
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      {documents.map((doc) => (
-        <div
-          key={doc._id}
-          onClick={() => onDocumentClick(doc)}
-          className="p-4 sm:p-6 rounded-xl backdrop-blur-sm bg-white/70 dark:bg-dark-100/50 
-            border border-gray-100 dark:border-gray-800 shadow-lg shadow-gray-100/20 
-            dark:shadow-dark-300/30 hover:shadow-xl hover:shadow-primary-100/20 
-            dark:hover:shadow-primary-900/30 transition-all duration-300 cursor-pointer
-            hover:bg-white/90 dark:hover:bg-dark-100/70"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/30 flex-shrink-0">
-                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500 dark:text-primary-300" />
+      {loading ? (
+        <p className="text-gray-500 dark:text-gray-400">Loading documents...</p>
+      ) : documents.length === 0 ? (
+        <p className="text-gray-500 dark:text-gray-400">No documents found.</p>
+      ) : (
+        documents.map((doc) => (
+          <div
+            key={doc.id}
+            onClick={() => handleDocumentClick(doc)}
+            className="p-4 sm:p-6 rounded-xl backdrop-blur-sm bg-white/70 dark:bg-dark-100/50 
+              border border-gray-100 dark:border-gray-800 shadow-lg shadow-gray-100/20 
+              dark:shadow-dark-300/30 hover:shadow-xl hover:shadow-primary-100/20 
+              dark:hover:shadow-primary-900/30 transition-all duration-300 cursor-pointer
+              hover:bg-white/90 dark:hover:bg-dark-100/70"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary-50 dark:bg-primary-900/30 flex-shrink-0">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500 dark:text-primary-300" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 dark:text-white">{doc.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{doc.type}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">{doc.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{doc.category}</p>
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date().toLocaleDateString()}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(doc.uploadDate).toLocaleDateString()}</span>
-            </div>
+
+            {loadingDocId === doc.id && (
+              <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                Fetching summary...
+              </div>
+            )}
           </div>
-
-          {doc.tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {doc.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full 
-                    bg-primary-50 dark:bg-primary-900/30 text-xs text-primary-700 
-                    dark:text-primary-300 border border-primary-100 dark:border-primary-800"
-                >
-                  <Tag className="w-3 h-3" />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {selectedDoc === doc._id && summary && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-700">File Summary:</h3>
-              <p className="text-gray-600">{summary}</p>
-            </div>
-          )}
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }
