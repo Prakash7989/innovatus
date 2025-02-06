@@ -1,49 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { FileText, Calendar } from "lucide-react";
 import axios from "axios";
+import { DocumentModal } from "./DocumentModal";
 
-export function DocumentList({ onDocumentClick }) {
+export function DocumentList() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingDocId, setLoadingDocId] = useState(null);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await axios.get("http://localhost:5000/files");
-        setDocuments(response.data);
+        // Sort documents by upload_date in descending order
+        const sortedDocuments = response.data.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
+      setDocuments(sortedDocuments);
       } catch (error) {
         console.error("Error fetching documents:", error);
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchDocuments(); 
-  
-    const interval = setInterval(fetchDocuments, 5000); 
-  
-    return () => clearInterval(interval); 
+
+    fetchDocuments();
   }, []);
-  
 
   const handleDocumentClick = async (doc) => {
-    if (!doc || !doc.id) {
-      console.error("Error: Document ID is missing");
-      return;
-    }
-
-    setLoadingDocId(doc.id);
+    // Open modal immediately with a loading state
+    setSelectedDocument({ ...doc, summary: null });
+    setIsLoadingSummary(true);
 
     try {
+      console.log("Fetching summary for:", doc.id);
       const response = await axios.get(`http://localhost:5000/get-summary/${doc.id}`);
-      const summary = response.data.summary;
-      onDocumentClick({ ...doc, summary });
+      setSelectedDocument((prevDoc) => ({
+        ...prevDoc,
+        summary: response.data.summary,
+      }));
     } catch (error) {
-      console.error("Error fetching summary:", error);
-      onDocumentClick({ ...doc, summary: "Failed to load summary." });
+      console.error("Error fetching summary:", error.response?.data || error.message);
+      setSelectedDocument((prevDoc) => ({
+        ...prevDoc,
+        summary: "Failed to load summary.",
+      }));
     } finally {
-      setLoadingDocId(null);
+      setIsLoadingSummary(false);
     }
   };
 
@@ -74,19 +76,36 @@ export function DocumentList({ onDocumentClick }) {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{doc.type}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date().toLocaleDateString()}</span>
-              </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+  <Calendar className="w-4 h-4" />
+  <span>
+  {new Date(doc.upload_date).toLocaleString()}
+</span>
+</div>
             </div>
 
-            {loadingDocId === doc.id && (
-              <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                Fetching summary...
-              </div>
-            )}
+            {/* Categories as chips */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              {doc.categories.map((category, index) => (
+                <div
+                  key={index}
+                  className="px-3 py-1 text-sm rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300"
+                >
+                  {category.category}
+                </div>
+              ))}
+            </div>
           </div>
         ))
+      )}
+
+      {/* Modal for document details */}
+      {selectedDocument && (
+        <DocumentModal
+          document={selectedDocument}
+          isLoadingSummary={isLoadingSummary}
+          onClose={() => setSelectedDocument(null)}
+        />
       )}
     </div>
   );

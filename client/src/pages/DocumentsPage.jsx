@@ -14,7 +14,9 @@ export function DocumentsPage() {
     const fetchDocuments = async () => {
       try {
         const response = await axios.get("http://localhost:5000/files");
-        setDocuments(response.data); // Update state with fetched documents
+        // Sort documents by upload_date in descending order
+        const sortedDocuments = response.data.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
+        setDocuments(sortedDocuments);
       } catch (error) {
         console.error("Error fetching documents:", error);
       }
@@ -24,18 +26,18 @@ export function DocumentsPage() {
   }, []); // Run only once when component mounts
 
   // Handle file upload
-  const handleFileUpload = (file) => {
-    if (!file) return;
+  const handleFileUpload = async (uploadedFile) => {
+    if (!uploadedFile) return;
 
-    const newDocument = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      type: file.type,
-      uploadDate: new Date(),
-      summary: "Document uploaded successfully.",
-    };
-
-    setDocuments((prevDocs) => [newDocument, ...prevDocs]);
+    try {
+      // Fetch the updated list of documents after upload
+      const response = await axios.get("http://localhost:5000/files");
+      // Sort documents by upload_date in descending order
+      const sortedDocuments = response.data.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
+      setDocuments(sortedDocuments);
+    } catch (error) {
+      console.error("Error fetching updated documents:", error);
+    }
   };
 
   return (
@@ -53,14 +55,20 @@ export function DocumentsPage() {
         </h3>
 
         {documents.length > 0 ? (
-          <DocumentList documents={documents} onDocumentClick={setSelectedDocument} />
+          <DocumentList
+            documents={documents}
+            onDocumentClick={setSelectedDocument}
+          />
         ) : (
           <p className="text-gray-500 text-center text-xs">No documents found.</p>
         )}
       </div>
 
       {selectedDocument && (
-        <DocumentModal document={selectedDocument} onClose={() => setSelectedDocument(null)} />
+        <DocumentModal
+          document={selectedDocument}
+          onClose={() => setSelectedDocument(null)}
+        />
       )}
     </div>
   );
