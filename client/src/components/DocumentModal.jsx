@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
-import { X, Play, Pause, Volume2 } from "lucide-react";
-
+import { X } from "lucide-react";
 export function DocumentModal({ document, isLoadingSummary, onClose }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const speechRef = useRef(null);
@@ -36,7 +35,6 @@ export function DocumentModal({ document, isLoadingSummary, onClose }) {
           border-gray-200/50 dark:border-gray-800/50">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <div className="p-2 rounded-lg bg-primary-50/50 dark:bg-primary-900/30 flex-shrink-0">
-              <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500 dark:text-primary-300" />
             </div>
             <div className="min-w-0">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate">
