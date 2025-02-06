@@ -5,6 +5,42 @@ import axios from 'axios';
 
 export function FileUpload({ onFileUpload }) {
   const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [files, setFiles] = useState([]);  // Ensure it's an array
+
+  const handleFileUpload = (newFile) => {
+    if (!newFile) return;
+    
+    // Ensure `files` is always an array
+    setFiles((prevFiles) => Array.isArray(prevFiles) ? [...prevFiles, newFile] : [newFile]);
+  };
+  
+  const uploadFile = async (selectedFile) => {
+    if (!selectedFile) return;
+  
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+  
+    console.log("Uploading file:", selectedFile);
+  
+    try {
+      const response = await axios.post("http://localhost:5000/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      console.log("Upload successful:", response.data);
+      onFileUpload(response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 1) {
@@ -12,14 +48,14 @@ export function FileUpload({ onFileUpload }) {
       return;
     }
     if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]); // Store only the first file
-      onFileUpload(acceptedFiles); // Pass files to parent if needed
+      const selectedFile = acceptedFiles[0];
+      setFile(selectedFile);
+      uploadFile(selectedFile); // Automatically upload on drop
     }
-  }, [onFileUpload]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxFiles: 1, // Restrict to one file
     accept: {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
@@ -32,7 +68,7 @@ export function FileUpload({ onFileUpload }) {
       alert("You can upload only one file at a time.");
       return;
     }
-    
+
     const selectedFile = e.target.files[0];
     if (
       selectedFile &&
@@ -45,32 +81,9 @@ export function FileUpload({ onFileUpload }) {
       )
     ) {
       setFile(selectedFile);
+      uploadFile(selectedFile); // Automatically upload on selection
     } else {
       alert("Please select a valid file (PDF, PPT, PPTX, DOC, DOCX).");
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!file) {
-      alert("Please choose a file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await axios.post("http://localhost:5000/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      alert("File uploaded successfully.");
-      console.log("Upload Response:", response.data);
-    } catch (err) {
-      console.error("Error uploading file:", err);
-      alert("File upload failed.");
     }
   };
 
@@ -98,6 +111,7 @@ export function FileUpload({ onFileUpload }) {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Supports PDF, DOCX, and PPT files (One file at a time)
         </p>
+        {uploading && <p className="text-blue-500">Uploading...</p>}
       </div>
       <input 
         type="file" 
@@ -105,12 +119,6 @@ export function FileUpload({ onFileUpload }) {
         accept=".ppt,.pptx,.pdf,.doc,.docx"
         className="hidden"
       />
-      <button 
-        onClick={handleSubmit} 
-        className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-      >
-        Upload File
-      </button>
     </div>
   );
 }
