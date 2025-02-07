@@ -1,22 +1,6 @@
 import React, { useRef, useState } from "react";
 import { X } from "lucide-react";
 export function DocumentModal({ document, isLoadingSummary, onClose }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const speechRef = useRef(null);
-
-  const handleSpeech = () => {
-    if (!speechRef.current) {
-      speechRef.current = new SpeechSynthesisUtterance(document.summary || "");
-    }
-
-    if (isPlaying) {
-      window.speechSynthesis.cancel();
-    } else {
-      window.speechSynthesis.speak(speechRef.current);
-    }
-
-    setIsPlaying(!isPlaying);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
@@ -80,12 +64,12 @@ export function DocumentModal({ document, isLoadingSummary, onClose }) {
           )}
 
           {/* Original Text Section */}
-          {/* <div className="mt-6">
+          <div className="mt-6">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white">Original Text</h4>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
               {document.originaltext}
             </p>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FileUpload } from '../components/FileUpload';
 import { DocumentList } from '../components/DocumentList.jsx';
-import { SearchBar } from '../components/SearchBar.jsx';
+// import { SearchBar } from '../components/SearchBar.jsx';
 import { DocumentModal } from '../components/DocumentModal.jsx';
 
 export function DocumentsPage() {
@@ -47,7 +47,7 @@ export function DocumentsPage() {
       </h2>
 
       <FileUpload onFileUpload={handleFileUpload} />
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       <div className="p-3 rounded-lg bg-white dark:bg-gray-800 shadow-md">
         <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
