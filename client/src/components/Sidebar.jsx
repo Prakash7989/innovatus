@@ -111,7 +111,7 @@ export function Sidebar({ isMobile, isOpen, onToggle, user }) {
               className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow-lg w-96 text-center"
             >
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Confirm Logout</h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">Are you sure you want to log out?</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Are you sure want to log out?</p>
               <div className="mt-4 flex justify-center gap-4">
                 <button 
                   onClick={() => setShowModal(false)}
