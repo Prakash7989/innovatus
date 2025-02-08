@@ -31,11 +31,11 @@ export function Sidebar({ isMobile, isOpen, onToggle, user }) {
         className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out
           ${isOpen ? 'w-64' : 'w-16'} bg-white/80 dark:bg-dark-100/80 backdrop-blur-md`}
       >
-        <div className="flex flex-col h-full" onClick={() => !isMobile && onToggle()}> 
+        <div className="flex flex-col h-full" onClick={() => !isMobile && onToggle()}>
           {/* Sidebar Header */}
           <div className="flex items-center justify-between h-16 px-4">
             {isOpen && (
-              <h1 className="text-xl font-semibold bg-gradient-to-r from-primary-600 to-primary-500 
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 
                 dark:from-primary-300 dark:to-primary-400 bg-clip-text text-transparent">
                 InovateUs
               </h1>
@@ -46,19 +46,21 @@ export function Sidebar({ isMobile, isOpen, onToggle, user }) {
           <nav className="flex-1 px-3 py-4">
             {menuItems.map(({ route, icon: Icon, label }) => (
               <Link
-                key={route}
-                to={route}
-                className={`w-full flex items-center gap-4 px-3 py-3 mb-2 rounded-xl 
-                  transition-all duration-200 group
-                  ${location.pathname === route 
-                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300' 
-                    : 'hover:bg-gray-100 dark:hover:bg-dark-200/50 text-gray-600 dark:text-gray-400'
-                  }`}
-              >
-                <Icon className={`w-6 h-6 transition-transform duration-200 
-                  ${location.pathname === route ? 'scale-110' : 'group-hover:scale-110'}`} />
-                {isOpen && <span className="font-medium whitespace-nowrap">{label}</span>}
-              </Link>
+              key={route}
+              to={route}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full flex items-center gap-4 px-3 py-3 mb-2 rounded-xl 
+                transition-all duration-200 group
+                ${location.pathname === route 
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300' 
+                  : 'hover:bg-gray-100 dark:hover:bg-dark-200/50 text-gray-600 dark:text-gray-400'
+                }`}
+            >
+              <Icon className={`w-6 h-6 transition-transform duration-200 
+                ${location.pathname === route ? 'scale-110' : 'group-hover:scale-110'}`} />
+              {isOpen && <span className="font-medium whitespace-nowrap">{label}</span>}
+            </Link>
+            
             ))}
           </nav>
 
@@ -111,7 +113,7 @@ export function Sidebar({ isMobile, isOpen, onToggle, user }) {
               className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow-lg w-96 text-center"
             >
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Confirm Logout</h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">Are you sure want to log out?</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Are you sure you want to log out?</p>
               <div className="mt-4 flex justify-center gap-4">
                 <button 
                   onClick={() => setShowModal(false)}

@@ -5,6 +5,7 @@ import { db, auth } from "../lib/firebase";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
+
 const DropdownPanel = ({ isOpen, onToggle, icon: Icon, title, children }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
@@ -145,12 +146,12 @@ export function NewsPage({ theme }) {
     : articles.filter((article) => article.category?.includes(selectedCategory));
 
   return (
-    <div className="w-full min-h-screen  bg-gray-50 dark:bg-gray-900">
+    <div className="w-full min-h-screen  dark:bg-gray-900 ">
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
           <div className="w-full lg:w-72 flex flex-col gap-4 order-1 lg:order-2">
-            <div className="sticky top-4 space-y-4">
+            <div className="sticky top-24 space-y-4">
               {/* Trending Categories */}
               <DropdownPanel
                 isOpen={isTrendingOpen}
@@ -210,7 +211,7 @@ export function NewsPage({ theme }) {
           {/* Main Content */}
           <main className="flex-1 order-2 lg:order-1">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="primary text-2xl font-semibold text-primary-600 dark:text-white">
                 Latest News
               </h2>
               <button

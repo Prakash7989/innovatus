@@ -41,3 +41,20 @@
     transform: translateY(0);
   }
 }
+.toast-dark {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+.toast-light {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.Toastify__progress-bar--dark {
+  background: #3b82f6 !important;
+}
+
+.Toastify__progress-bar--light {
+  background: #60a5fa !important;
+}

@@ -26,11 +26,10 @@ export function NewsCard({ article, onSave, theme, savedArticle = false }) {
     await setDoc(userRef, { categoryScores }, { merge: true });
   };
   // const { theme } = theme();
-
   const handleClick = (event) => {
     event.stopPropagation();
     onSave?.(article);
-    handleReadMore(); //two times rendered even for unsave
+    handleReadMore();
 
     toast(article.isSaved ? "Removed from saved articles" : "Saved!", {
       position: "top-right",
@@ -39,7 +38,10 @@ export function NewsCard({ article, onSave, theme, savedArticle = false }) {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: theme === "dark" ? "dark" : "light",
+      className: theme === "dark" ? "toast-dark" : "toast-light",
+      progressClassName: theme === "dark" 
+        ? "Toastify__progress-bar--dark" 
+        : "Toastify__progress-bar--light"
     });
   };
 

@@ -1,0 +1,13 @@
+flask
+flask-cors
+werkzeug
+pdfplumber
+pymongo
+python-docx
+python-pptx
+transformers
+torch
+currentsapi
+python-dotenv
+python-multipart
+vercel-python-app
