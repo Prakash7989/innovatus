@@ -10,4 +10,3 @@ torch
 currentsapi
 python-dotenv
 python-multipart
-vercel-python-app
