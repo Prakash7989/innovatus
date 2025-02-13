@@ -232,13 +232,13 @@ export function DocumentList(theme) {
                   </div>
                
   <div 
-    className="absolute bottom-4 right-4  p-2 bg-red-500/80 text-white rounded-full cursor-pointer shadow-lg hover:bg-red-600 transition-all"
+    className="absolute bottom-4 right-4 h-8 w-8 opacity-80 p-2 bg-red-500/80 text-white rounded-full cursor-pointer shadow-lg hover:bg-red-600 transition-all"
     onClick={(e) => {
       e.stopPropagation();
       handleDelete(doc.id);
     }}
   >
-    <Trash2 className="w-6 h-6" />
+    <Trash2 className="w-4 h-4" />
   </div>
 
 

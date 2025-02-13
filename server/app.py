@@ -73,7 +73,16 @@ CATEGORIES = [
     "Journalism", "Social Media", "Marketing",
     "Sports", "E-Sports", "History", "Politics",
     "Renewable Energy", "Climate Change", "Environment",
-    "Food & Cuisine", "Travel", "Personal Development"
+    "Food & Cuisine", "Travel", "Personal Development",
+    # Bureaucracy & Governance
+    "Public Affairs", "Government & Bureaucracy", "Regulations & Compliance",
+    "Civil Services", "International Relations", "Public Finance & Budgeting",
+    "Legislative Processes", "Election Systems", "Diplomacy & Foreign Policy",
+    "Human Rights & Law", "Public Sector Management", "Economic Policy",
+    "Public Safety & Law Enforcement", "Urban Planning & Infrastructure",
+    "Social Welfare & Development", "Taxation & Revenue", "Defense & National Security",
+    "Public Health Policy", "Labor Laws & Employment Regulations",
+    "Trade Policies & Global Markets", "Consumer Rights & Protection"
 ]
 
 # Helper functions
